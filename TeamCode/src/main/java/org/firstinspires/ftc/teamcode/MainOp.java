@@ -31,10 +31,14 @@ public class MainOp extends OpMode {
     private double mmToInchConversion = 25.4;
     private double wheelDiameterIn = wheelDiameterMM / mmToInchConversion;
     private double gearRatio = 13.1;
+    // i believe this is wrong
     private double ticksPerInch = ((Math.PI * wheelDiameterIn) / gearRatio) / ticksPerRev;
 
     private int closePosIn = 2;
     private int farPosIn = 10;
+
+    private boolean drive = true;
+    private boolean close = true;
 
     @Override
     public void init() {
@@ -47,92 +51,55 @@ public class MainOp extends OpMode {
         BLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         FLMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
-//        BLMotor.setPositionPIDFCoefficients(kp);
-//        BRMotor.setPositionPIDFCoefficients(kp);
-//        FLMotor.setPositionPIDFCoefficients(kp);
-//        FRMotor.setPositionPIDFCoefficients(kp);
-
         BLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//
-//        BLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        BRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        FLMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        FRMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-//        BLMotor.setTargetPositionTolerance((int)(.1 * ticksPerInch));
-//        BRMotor.setTargetPositionTolerance((int)(.1 * ticksPerInch));
-//        FLMotor.setTargetPositionTolerance((int)(.1 * ticksPerInch));
-//        FRMotor.setTargetPositionTolerance((int)(.1 * ticksPerInch));
     }
 
     @Override
     public void loop() {
-        if (gamepad1.a || gamepad1.b) {
-            if (gamepad1.a && (Math.abs(closePosIn - sensor.getDistance(DistanceUnit.INCH)) > .5)) {
-//            int startingPos = BLMotor.getCurrentPosition();
-//            setTargetPos((int)(startingPos + (sensor.getDistance(DistanceUnit.INCH) - closePosIn) * ticksPerInch));
-                if (gamepad1.a && closePosIn > sensor.getDistance(DistanceUnit.INCH)) {
-                    telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH) - 2.1);
-                    setPowers(-1);
-                } else {
-                    setPowers(0);
-                }
 
-                if (gamepad1.a && closePosIn < sensor.getDistance(DistanceUnit.INCH)) {
-                    telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH) - 2.1);
-
-                    setPowers(-.1);
-                } else {
-                    setPowers(0);
-                }
-
-            } else if (gamepad1.b && (Math.abs(farPosIn - sensor.getDistance(DistanceUnit.INCH)) > .5)) {
-                if (gamepad1.b && farPosIn > sensor.getDistance(DistanceUnit.INCH)) {
-                    telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH) - 2.1);
-
-                    setPowers(.1);
-                } else {
-                    setPowers(0);
-                }
-
-                if (gamepad1.b && (farPosIn < sensor.getDistance(DistanceUnit.INCH))) {
-                    telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH) - 2.1);
-
-                    setPowers(-.1);
-                } else {
-                    setPowers(0);
-                }
-            }
-        } else {
-
-            joystickX = gamepad1.left_stick_x;
-            joystickY = gamepad1.left_stick_y;
-
-            drive(joystickY, joystickX);
+        if (gamepad1.x) {
+            drive = true;
+        } else if (gamepad1.a) {
+            drive = false;
+            close = true;
+        } else if (gamepad1.b) {
+            drive = false;
+            close = false;
         }
 
-        telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH) - 2.1);
+        if (drive){
+            drive(gamepad1.left_stick_y, gamepad1.right_stick_x);
+        } else if (close){
+            // go in direction to match distance sensor value to close value
+            if (closePosIn > sensor.getDistance(DistanceUnit.INCH)){
+                setPowers(-.1);
+            } else if (closePosIn < sensor.getDistance(DistanceUnit.INCH)){
+                setPowers(.1);
+            } else if (Math.abs(closePosIn - sensor.getDistance(DistanceUnit.INCH)) < .2){
+                setPowers(0);
+                drive = true;
+            }
+        } else {
+            // go in direction to match distance sensor value to far value
+            if (farPosIn > sensor.getDistance(DistanceUnit.INCH)){
+                setPowers(-.1);
+            } else if (farPosIn < sensor.getDistance(DistanceUnit.INCH)){
+                setPowers(.1);
+            } else if (Math.abs(farPosIn - sensor.getDistance(DistanceUnit.INCH)) < .2){
+                setPowers(0);
+                drive = true;
+            }
+        }
+
+        telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH)/* - 2.1*/);
 //        telemetry.addData("BLMotor Encoder Pos: ", BLMotor.getCurrentPosition());
 //        telemetry.addData("Target Position: ", BLMotor.getTargetPosition());
 //        telemetry.update();
     }
 
-
-
-//    private void setTargetPos(int pos){
-//        BLMotor.setTargetPosition(pos);
-//        BRMotor.setTargetPosition(pos);
-//        FLMotor.setTargetPosition(pos);
-//        FRMotor.setTargetPosition(pos);
-//
-//        BLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        BRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        FLMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        FRMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//    }
 
     private void setPowers(double power){
         BLMotor.setPower(power);
@@ -142,10 +109,10 @@ public class MainOp extends OpMode {
     }
 
     private void drive(double yIn, double xIn){
-        double BLPower = yIn + xIn;
-        double BRPower = yIn - xIn;
-        double FLPower = yIn + xIn;
-        double FRPower = yIn - xIn;
+        double BLPower = yIn - xIn;
+        double BRPower = yIn + xIn;
+        double FLPower = yIn - xIn;
+        double FRPower = yIn + xIn;
 
         double[] powers = {Math.abs(BLPower), Math.abs(BRPower), Math.abs(FLPower), Math.abs(FRPower)};
         Arrays.sort(powers);
