@@ -67,7 +67,7 @@ public class MainOp extends OpMode {
 
         if (gamepad1.x) {
             drive = true;
-        } else if (gamepad1.a && sensor.getDistance(DistanceUnit.INCH) < 6) {
+        } else if (gamepad1.a && sensor.getDistance(DistanceUnit.INCH) < 9) {
             drive = false;
             close = true;
         } // else if (gamepad1.b && sensor.getDistance(DistanceUnit.INCH) < 8) {
@@ -75,7 +75,7 @@ public class MainOp extends OpMode {
 //            close = false;
 //        }
 
-        if (drive || sensor.getDistance(DistanceUnit.INCH) > 5){
+        if (drive || sensor.getDistance(DistanceUnit.INCH) > 9){
 
             drive(gamepad1.left_stick_y, gamepad1.right_stick_x);
         } else if (close){
