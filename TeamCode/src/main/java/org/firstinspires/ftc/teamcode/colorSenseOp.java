@@ -39,18 +39,18 @@ public class colorSenseOp extends OpMode {
             redMode = false;
         }
 
-        if (gamepad1.a && redMode && (cSensor.red() > 200) && (cSensor.blue() < 50)) {
+        if (gamepad1.a && redMode && (cSensor.red() > cSensor.blue() * 2.8) && (cSensor.red() < cSensor.blue() * 3.9)) {
             closed = true;
-        } else if (!redMode && (cSensor.blue() > 200) && (cSensor.red() > 50)){
+        } else if (gamepad1.a && !redMode && (cSensor.blue() > cSensor.red() * 2.8) && (cSensor.blue() < cSensor.red() * 5.0)){
             closed = true;
         } else if (gamepad1.b){
             closed = false;
         }
 
-        if (redMode && (cSensor.red() > 200) && (cSensor.blue() < 50) && !closed){
-            gamepad1.rumble(1500);
-        } else if (!redMode && (cSensor.blue() > 200) && (cSensor.red() > 50) && !closed){
-            gamepad1.rumble(1500);
+        if (redMode && (cSensor.red() > cSensor.blue() * 2.8) && (cSensor.red() < cSensor.blue() * 3.9) && !closed){
+            gamepad1.rumble(200);
+        } else if (!redMode && (cSensor.blue() > cSensor.red() * 3.9) && (cSensor.blue() < cSensor.red() * 5.2) && !closed){
+            gamepad1.rumble(200);
         }
 
         telemetry.addData("Closed ? ", closed);
