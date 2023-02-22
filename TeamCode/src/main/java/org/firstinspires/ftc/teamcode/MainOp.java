@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -15,6 +16,7 @@ import java.util.Arrays;
 @TeleOp
 public class MainOp extends OpMode {
 
+    private ColorSensor cSensor;
     private DistanceSensor sensor;
     private DcMotorEx BLMotor;
     private DcMotorEx BRMotor;
@@ -42,6 +44,7 @@ public class MainOp extends OpMode {
 
     @Override
     public void init() {
+        cSensor = hardwareMap.get(ColorSensor.class, "cSensor");
         sensor = hardwareMap.get(DistanceSensor.class, "sensor");
         BLMotor = hardwareMap.get(DcMotorEx.class, "BLMotor");
         BRMotor = hardwareMap.get(DcMotorEx.class, "BRMotor");
