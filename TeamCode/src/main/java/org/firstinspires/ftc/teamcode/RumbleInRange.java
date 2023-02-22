@@ -49,8 +49,8 @@ public class RumbleInRange extends OpMode {
     public void loop() {
         drive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        if (sensor.getDistance(DistanceUnit.INCH) - 2 < 1.5){
-            gamepad1.rumble(20);
+        if (sensor.getDistance(DistanceUnit.INCH) - 2 < 2 && sensor.getDistance(DistanceUnit.INCH) - 2 > 1){
+            gamepad1.rumble(100);
         }
 
         telemetry.addData("sensor reading: ", sensor.getDistance(DistanceUnit.INCH) - 2);
