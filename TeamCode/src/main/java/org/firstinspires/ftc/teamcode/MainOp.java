@@ -34,7 +34,7 @@ public class MainOp extends OpMode {
     // i believe this is wrong
     private double ticksPerInch = ((Math.PI * wheelDiameterIn) / gearRatio) / ticksPerRev;
 
-    private int closePosIn = 2;
+    private double closePosIn = 1.5;
     private int farPosIn = 10;
 
     private boolean drive = true;
@@ -55,6 +55,11 @@ public class MainOp extends OpMode {
         BRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FLMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FRMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        BLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        BRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FLMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        FRMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
 
     @Override
@@ -62,39 +67,40 @@ public class MainOp extends OpMode {
 
         if (gamepad1.x) {
             drive = true;
-        } else if (gamepad1.a) {
+        } else if (gamepad1.a && sensor.getDistance(DistanceUnit.INCH) < 6) {
             drive = false;
             close = true;
-        } else if (gamepad1.b) {
-            drive = false;
-            close = false;
-        }
+        } // else if (gamepad1.b && sensor.getDistance(DistanceUnit.INCH) < 8) {
+//            drive = false;
+//            close = false;
+//        }
 
-        if (drive){
+        if (drive || sensor.getDistance(DistanceUnit.INCH) > 5){
+
             drive(gamepad1.left_stick_y, gamepad1.right_stick_x);
         } else if (close){
             // go in direction to match distance sensor value to close value
-            if (closePosIn > sensor.getDistance(DistanceUnit.INCH)){
-                setPowers(-.1);
-            } else if (closePosIn < sensor.getDistance(DistanceUnit.INCH)){
-                setPowers(.1);
-            } else if (Math.abs(closePosIn - sensor.getDistance(DistanceUnit.INCH)) < .2){
+            if (closePosIn - .1 > sensor.getDistance(DistanceUnit.INCH) - 2){
+                setPowers(.08 * Math.abs(closePosIn - sensor.getDistance(DistanceUnit.INCH) + 2));
+            } else if (closePosIn + .1 < sensor.getDistance(DistanceUnit.INCH) - 2){
+                setPowers(-.08 * Math.abs(closePosIn - sensor.getDistance(DistanceUnit.INCH) + 2));
+            } else {
                 setPowers(0);
                 drive = true;
             }
-        } else {
-            // go in direction to match distance sensor value to far value
-            if (farPosIn > sensor.getDistance(DistanceUnit.INCH)){
-                setPowers(-.1);
-            } else if (farPosIn < sensor.getDistance(DistanceUnit.INCH)){
-                setPowers(.1);
-            } else if (Math.abs(farPosIn - sensor.getDistance(DistanceUnit.INCH)) < .2){
-                setPowers(0);
-                drive = true;
-            }
-        }
+        } //else {
+//            // go in direction to match distance sensor value to far value
+//            if (farPosIn - .1 > sensor.getDistance(DistanceUnit.INCH) - 2){
+//                setPowers(.05 * Math.abs(farPosIn - sensor.getDistance(DistanceUnit.INCH) - 2));
+//            } else if (farPosIn + .1 < sensor.getDistance(DistanceUnit.INCH) - 2){
+//                setPowers(-.05 * Math.abs(farPosIn - sensor.getDistance(DistanceUnit.INCH) - 2));
+//            } else {
+//                setPowers(0);
+//                drive = true;
+//            }
+//        }
 
-        telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH)/* - 2.1*/);
+        telemetry.addData("Sensor Value: ", sensor.getDistance(DistanceUnit.INCH) - 2);
 //        telemetry.addData("BLMotor Encoder Pos: ", BLMotor.getCurrentPosition());
 //        telemetry.addData("Target Position: ", BLMotor.getTargetPosition());
 //        telemetry.update();
