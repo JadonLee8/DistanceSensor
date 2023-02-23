@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 @TeleOp
 public class colorSenseOp extends OpMode {
 
+    private ColorSensor cSensor2;
     private ColorSensor cSensor;
     private DistanceSensor sensor;
     private DcMotorEx BLMotor;
@@ -24,6 +25,7 @@ public class colorSenseOp extends OpMode {
     @Override
     public void init() {
         cSensor = hardwareMap.get(ColorSensor.class, "cSensor");
+        cSensor2 = hardwareMap.get(ColorSensor.class, "cSensor2");
         sensor = hardwareMap.get(DistanceSensor.class, "sensor");
         BLMotor = hardwareMap.get(DcMotorEx.class, "BLMotor");
         BRMotor = hardwareMap.get(DcMotorEx.class, "BRMotor");

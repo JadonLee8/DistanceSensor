@@ -15,6 +15,7 @@ import java.util.Arrays;
 @TeleOp
 public class RumbleInRange extends OpMode {
 
+    private ColorSensor cSensor2;
     private ColorSensor cSensor;
     private DistanceSensor sensor;
     private DcMotorEx BLMotor;
@@ -25,6 +26,7 @@ public class RumbleInRange extends OpMode {
     @Override
     public void init() {
         cSensor = hardwareMap.get(ColorSensor.class, "cSensor");
+        cSensor2 = hardwareMap.get(ColorSensor.class, "cSensor2");
         sensor = hardwareMap.get(DistanceSensor.class, "sensor");
         BLMotor = hardwareMap.get(DcMotorEx.class, "BLMotor");
         BRMotor = hardwareMap.get(DcMotorEx.class, "BRMotor");
@@ -49,7 +51,9 @@ public class RumbleInRange extends OpMode {
     public void loop() {
         drive(gamepad1.left_stick_y, gamepad1.right_stick_x);
 
-        if (sensor.getDistance(DistanceUnit.INCH) - 2 < 2 && sensor.getDistance(DistanceUnit.INCH) - 2 > 1){
+        if (!((cSensor2.red() > cSensor2.blue() * 2.8) && (cSensor2.red() < cSensor2.blue() * 3.9) || (cSensor2.blue() > cSensor2.red() * 2.8) && (cSensor2.blue() < cSensor2.red() * 5.0)) && sensor.getDistance(DistanceUnit.INCH) - 2 < 2 && sensor.getDistance(DistanceUnit.INCH) - 2 > 1){
+            gamepad1.rumble(100);
+        } else if (sensor.getDistance(DistanceUnit.INCH) - 2 < 1 && sensor.getDistance(DistanceUnit.INCH) - 2 > 0) {
             gamepad1.rumble(100);
         }
 
